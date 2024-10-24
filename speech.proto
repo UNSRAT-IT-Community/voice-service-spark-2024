@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package speech;
+
+service SpeechService {
+    rpc Listen(STTRequest) returns (STTResponse);
+    rpc ConvertToWav(TTSRequest) returns (TTSResponse);
+}
+
+message STTRequest {
+    bytes audio_data = 1;
+}
+
+message STTResponse {
+    string text = 1;
+}
+
+message TTSRequest {
+    string text = 1;
+}
+
+message TTSResponse {
+    bytes audio_data = 1;
+}
