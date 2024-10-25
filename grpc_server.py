@@ -3,7 +3,6 @@ from concurrent import futures
 import speech_pb2, speech_pb2_grpc
 import speech_recognition as sr
 import keyboard
-import tempfile
 import os
 import time
 import edge_tts
@@ -17,32 +16,29 @@ VOICE = VOICES[0]
 class SpeechService(speech_pb2_grpc.SpeechServiceServicer):
     # STT (Speech to Text)
     def Listen(self, request, context):
+        # Path ke file WAV yang sudah disimpan
+        input_wav_path = 'C:/Users/Daffa Nur Fiat/OneDrive/Documents/UNITY/test2/input-source/input_audio.wav'
+        
+        # Baca audio dari file WAV
+        with open(input_wav_path, 'rb') as f:
+            audio_data = f.read()
+
+        # Buat recognizer
         recognizer = sr.Recognizer()
-        mic = sr.Microphone()
+        audio_file = sr.AudioFile(input_wav_path)
 
-        with mic as source:
+        with audio_file as source:
             recognizer.adjust_for_ambient_noise(source)
-            print("Tekan dan tahan 'Space' untuk mulai berbicara...")
-            keyboard.wait('space')
-            print("Merekam...")
-
-            audio = recognizer.listen(source)
-            print("Selesai merekam.")
-
-            # Simpan input audio ke folder source-input
-            audio_data = audio.get_wav_data()
-            input_wav_path = 'C:/Users/Daffa Nur Fiat/OneDrive/Documents/UNITY/test2/source-input/input_audio.wav'
-            with open(input_wav_path, 'wb') as f:
-                f.write(audio_data)
+            audio = recognizer.record(source)
 
             try:
                 text = recognizer.recognize_google(audio, language="id-ID")
                 print(f"Anda mengatakan: {text}")
-                return speech_pb2.STTResponse(text=text)
+                return speech_pb2.STTResponse(text=text.encode('utf-8'))  # Mengembalikan hasil transkripsi sebagai bytes
             except sr.UnknownValueError:
-                return speech_pb2.STTResponse(text="Audio tidak bisa dikenali")
+                return speech_pb2.STTResponse(text="Audio tidak bisa dikenali".encode('utf-8'))
             except sr.RequestError:
-                return speech_pb2.STTResponse(text="Terjadi kesalahan pada request")
+                return speech_pb2.STTResponse(text="Terjadi kesalahan pada request".encode('utf-8'))
 
     # TTS (Text to Speech)
     async def synthesize_speech(self, text, voice):

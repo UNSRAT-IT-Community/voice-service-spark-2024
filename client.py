@@ -1,62 +1,15 @@
 import grpc
-import wave
-import pyaudio
-import keyboard
 import speech_pb2, speech_pb2_grpc
-import os
 
 # Koneksi gRPC ke server STT dan TTS
 channel = grpc.insecure_channel('localhost:50051')
 stub = speech_pb2_grpc.SpeechServiceStub(channel)
 
-# Pengaturan pyaudio untuk perekaman audio
-CHUNK = 1024
-FORMAT = pyaudio.paInt16
-CHANNELS = 1
-RATE = 16000
-
-def record_audio(output_file_path):
-    audio = pyaudio.PyAudio()
-    
-    # Buka stream audio
-    stream = audio.open(format=FORMAT, channels=CHANNELS,
-                        rate=RATE, input=True,
-                        frames_per_buffer=CHUNK)
-
-    print("Tekan spasi untuk mulai merekam...")
-    keyboard.wait('space')  # Tunggu penekanan spasi untuk memulai rekaman
-    print("Mulai merekam...")
-
-    frames = []
-    
-    # Merekam sampai spasi dilepas
-    while True:
-        data = stream.read(CHUNK)
-        frames.append(data)
-        # Cek jika tombol spasi tidak ditekan lagi (dilepas)
-        if not keyboard.is_pressed('space'):
-            print("Rekaman selesai.")
-            break
-
-    # Tutup stream dan terminasi pyaudio
-    stream.stop_stream()
-    stream.close()
-    audio.terminate()
-
-    # Simpan ke file WAV
-    with wave.open(output_file_path, 'wb') as wf:
-        wf.setnchannels(CHANNELS)
-        wf.setsampwidth(audio.get_sample_size(FORMAT))
-        wf.setframerate(RATE)
-        wf.writeframes(b''.join(frames))
-
-    print(f"Audio disimpan di {output_file_path}")
-
 def speech_to_text():
+    # Path ke file audio yang ingin diubah menjadi teks
     audio_file_path = 'C:/Users/Daffa Nur Fiat/OneDrive/Documents/UNITY/test2/input-source/input_audio.wav'
-    record_audio(audio_file_path)
 
-    # Buka file audio yang direkam
+    # Baca file audio yang ada
     with open(audio_file_path, 'rb') as f:
         audio_data = f.read()
 
@@ -68,7 +21,7 @@ def speech_to_text():
 
 def text_to_speech(text):
     # Mengirimkan teks ke server untuk sintesis suara
-    response = stub.ConvertToWav(speech_pb2.TTSRequest(text=text))
+    response = stub.ConvertToWav(speech_pb2.TTSRequest(text=text.encode('utf-8')))
     
     # Simpan audio ke file WAV
     output_wav_path = 'C:/Users/Daffa Nur Fiat/OneDrive/Documents/UNITY/test2/output/output_audio.wav'
