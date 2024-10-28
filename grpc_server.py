@@ -17,7 +17,7 @@ class SpeechService(speech_pb2_grpc.SpeechServiceServicer):
     # STT (Speech to Text)
     def Listen(self, request, context):
         # Path ke file WAV yang sudah disimpan
-        input_wav_path = 'C:/Users/Daffa Nur Fiat/OneDrive/Documents/UNITY/test2/input-source/input_audio.wav'
+        input_wav_path = './input-source/input_audio.wav'
         
         # Baca audio dari file WAV
         with open(input_wav_path, 'rb') as f:
@@ -43,7 +43,7 @@ class SpeechService(speech_pb2_grpc.SpeechServiceServicer):
     # TTS (Text to Speech)
     async def synthesize_speech(self, text, voice):
         communicate = edge_tts.Communicate(text, voice)
-        temp_wav_path = 'C:/Users/Daffa Nur Fiat/OneDrive/Documents/UNITY/test2/output/output_audio.wav'
+        temp_wav_path = './output/output_audio.wav'
         await communicate.save(temp_wav_path)
         return temp_wav_path
 

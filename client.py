@@ -7,7 +7,7 @@ stub = speech_pb2_grpc.SpeechServiceStub(channel)
 
 def speech_to_text():
     # Path ke file audio yang ingin diubah menjadi teks
-    audio_file_path = 'C:/Users/Daffa Nur Fiat/OneDrive/Documents/UNITY/test2/input-source/input_audio.wav'
+    audio_file_path = './input-source/input_audio.wav'
 
     # Baca file audio yang ada
     with open(audio_file_path, 'rb') as f:
@@ -24,7 +24,7 @@ def text_to_speech(text):
     response = stub.ConvertToWav(speech_pb2.TTSRequest(text=text.encode('utf-8')))
     
     # Simpan audio ke file WAV
-    output_wav_path = 'C:/Users/Daffa Nur Fiat/OneDrive/Documents/UNITY/test2/output/output_audio.wav'
+    output_wav_path = './output/output_audio.wav'
     with open(output_wav_path, 'wb') as f:
         f.write(response.audio_data)
     

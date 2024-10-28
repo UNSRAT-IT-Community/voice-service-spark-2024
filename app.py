@@ -12,8 +12,8 @@ import keyboard
 app = Flask(__name__)
 
 # Folder untuk menyimpan file input dan output
-SOURCE_INPUT_FOLDER = 'C:/Users/Daffa Nur Fiat/OneDrive/Documents/UNITY/test2/input-source'
-OUTPUT_FOLDER = 'C:/Users/Daffa Nur Fiat/OneDrive/Documents/UNITY/test2/output'
+SOURCE_INPUT_FOLDER = './input-source'
+OUTPUT_FOLDER = './output'
 os.makedirs(SOURCE_INPUT_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
