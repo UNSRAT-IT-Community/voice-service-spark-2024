@@ -1,9 +1,15 @@
 import grpc
 import speech_pb2, speech_pb2_grpc
+import emoji
 
 # Koneksi gRPC ke server STT dan TTS
 channel = grpc.insecure_channel('localhost:50051')
 stub = speech_pb2_grpc.SpeechServiceStub(channel)
+
+# Remove emoji
+def remove_emoji(text):
+    # Hapus emoji dari teks
+    return ''.join(char for char in text if not emoji.is_emoji(char))
 
 def speech_to_text():
     # Path ke file audio yang ingin diubah menjadi teks
@@ -16,12 +22,17 @@ def speech_to_text():
     # Kirim data audio ke server gRPC untuk transkripsi
     response = stub.Listen(speech_pb2.STTRequest(audio_data=audio_data))
     
+    # Hapus emoji dari hasil transkripsi
+    clean_text = remove_emoji(response.text)
+    
     # Kembalikan hasil transkripsi
-    print(f"Hasil transkripsi: {response.text}")
+    print(f"Hasil transkripsi: {clean_text}")
 
 def text_to_speech(text):
+    # Bersihkan teks dari emoji
+    cleaned_text = remove_emoji(text)
     # Mengirimkan teks ke server untuk sintesis suara
-    response = stub.ConvertToWav(speech_pb2.TTSRequest(text=text.encode('utf-8')))
+    response = stub.ConvertToWav(speech_pb2.TTSRequest(text=cleaned_text.encode('utf-8')))
     
     # Simpan audio ke file WAV
     output_wav_path = './output/output_audio.wav'
